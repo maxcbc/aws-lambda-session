@@ -1,0 +1,18 @@
+service: aws-lambda-session-mbc
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+
+functions:
+  function1:
+    handler: index.handler
+    events:
+      - http:
+          path: hello/{name}
+          method: get
+          request:
+            parameters:
+              paths:
+                name: true
