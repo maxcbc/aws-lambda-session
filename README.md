@@ -32,7 +32,10 @@ You'll need an AWS_ACCESS_KEY_ID and an AWS_SECRET_ACCESS_KEY set on your machin
 You can use credentials for your own AWS account, or Max can provide some for you.
 
 ## Structure
+
 This training session is split into 1 part:
+
 - [Part 1 | A Simple HTTP Serverless App](./part-1/README.md)
+- [Part 2 | Plugins & Resources](./part-2/README.md)
 
 

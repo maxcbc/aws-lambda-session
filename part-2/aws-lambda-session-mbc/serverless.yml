@@ -1,0 +1,57 @@
+service: aws-lambda-session-mbc
+frameworkVersion: '3'
+plugins:
+  - serverless-plugin-typescript
+provider:
+  name: aws
+  runtime: nodejs18.x
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - 's3:Get*'
+            - 's3:Put*'
+            - 's3:List*'
+            - 's3:Head*'
+          Resource:
+            Fn::Join:
+              - ''
+              - - 'arn:aws:s3:::'
+                - Ref: NameBucket
+                - '*'
+        - Effect: Allow
+          Action:
+            - 'sqs:send*'
+          Resource:
+            - !GetAtt NameQueue.Arn
+functions:
+  function1:
+    handler: index.getHandler
+    events:
+      - http:
+          path: hello/{name}
+          method: get
+          request:
+            parameters:
+              paths:
+                name: true
+    environment:
+      NAME_QUEUE_URL: !Ref NameQueue
+  function2:
+    handler: index.queueHandler
+    reservedConcurrency: 1
+    events:
+      - sqs:
+          arn: !GetAtt NameQueue.Arn
+          batchSize: 100
+          maximumBatchingWindow: 60
+    environment:
+      NAME_BUCKET: !Ref NameBucket
+resources:
+  Resources:
+    NameBucket:
+      Type: 'AWS::S3::Bucket'
+      DeletionPolicy: Delete
+    NameQueue:
+      Type: 'AWS::SQS::Queue'
