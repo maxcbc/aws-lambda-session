@@ -27,9 +27,6 @@ module iam {
 
 resource "local_file" "creds" {
   for_each = toset(local.participant_names)
-  content  = jsonencode({
-    profiles : module.iam.user_profiles,
-    access_keys : module.iam.user_access_keys
-  })
+  content  = jsonencode(module.iam.user_credentials)
   filename = "credentials.json"
 }

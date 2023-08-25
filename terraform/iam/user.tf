@@ -28,15 +28,14 @@ resource "aws_iam_access_key" "participant_key" {
   user    = each.value.name
 }
 
-output "user_profiles" {
+output "user_credentials" {
   value = toset([
-  for profile in aws_iam_user_login_profile.participants : { user = profile.user, password = profile.password }
+  for participant in toset(var.participant_names) : {
+      user = aws_iam_user_login_profile.participants[participant].user,
+      password = aws_iam_user_login_profile.participants[participant].password,
+      access_key_id = aws_iam_access_key.participant_key[participant].id,
+      secret_access_key = aws_iam_access_key.participant_key[participant].secret
+    }
   ])
 }
 
-
-output "user_access_keys" {
-  value = toset([
-    for key in aws_iam_access_key.participant_key : { user = key.user, aws_access_key_id = key.id, aws_secret_access_key = key.secret }
-  ])
-}
